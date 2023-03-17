@@ -49,9 +49,9 @@ namespace iw6x_server_launcher
         private void Main_Load(object sender, EventArgs e)
         {
             // We need to set the "XLABS_GHOSTS_INSTALL" environment variable to the game location
-            Environment.SetEnvironmentVariable("XLABS_GHOSTS_INSTALL", game_location);
             iw6x_location = Path.Combine(LocalAppData, "xlabs", "data", "iw6x", app);
             game_location = Directory.GetCurrentDirectory();
+            Environment.SetEnvironmentVariable("XLABS_GHOSTS_INSTALL", game_location);
 
             xlabs_app_full = Path.Combine(game_location, xlabs_app);
             config_file = Path.Combine(game_location, config_file);
