@@ -243,9 +243,8 @@ namespace iw6x_server_launcher
 
 
             string NumberOfPlayers = readConfigValue(launch_config, "set sv_maxclients");
-            if(NumberOfPlayers != "")
+            if (!string.IsNullOrEmpty(NumberOfPlayers))
             {
-                Console.WriteLine("Number of players: " + NumberOfPlayers);
                 labelPlayersValue.Text = NumberOfPlayers;
             }
 
@@ -530,27 +529,39 @@ namespace iw6x_server_launcher
         {
             string configPath = Path.Combine(game_location, "iw6", configFile);
 
-            string value = null;
-            string[] lines = File.ReadAllLines(configPath);
-            foreach (string line in lines)
+            if (!File.Exists(configPath)) return null;
+
+            foreach (string rawLine in File.ReadAllLines(configPath))
             {
-                string trimmedLine = line.Trim();
-                int commentIndex = trimmedLine.IndexOf("//");
+                string line = rawLine.Trim();
+                int commentIndex = line.IndexOf("//", StringComparison.Ordinal);
                 if (commentIndex != -1)
                 {
-                    trimmedLine = trimmedLine.Substring(0, commentIndex).Trim();
+                    line = line.Substring(0, commentIndex).Trim();
                 }
-                if (trimmedLine.StartsWith(key))
+                if (line.Length == 0) continue;
+
+                if (!line.StartsWith(key, StringComparison.OrdinalIgnoreCase)) continue;
+
+                // Remove the key portion and trim remainder
+                string remainder = line.Substring(key.Length).Trim();
+
+                // Accept both "= value" and "value" styles
+                if (remainder.StartsWith("="))
                 {
-                    int equalsIndex = trimmedLine.IndexOf("=");
-                    if (equalsIndex != -1)
-                    {
-                        value = trimmedLine.Substring(equalsIndex + 1).Trim();
-                    }
-                    break;
+                    remainder = remainder.Substring(1).Trim();
                 }
+
+                // Remove surrounding quotes if present
+                if (remainder.Length >= 2 && remainder.StartsWith("\"") && remainder.EndsWith("\""))
+                {
+                    remainder = remainder.Substring(1, remainder.Length - 2);
+                }
+
+                return remainder;
             }
-            return value;
+
+            return null;
         }
     }
 }
