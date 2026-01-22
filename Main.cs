@@ -57,7 +57,7 @@ namespace iw6x_server_launcher
             string appDataIw6x = Path.Combine(LocalAppData, "xlabs", "data", "iw6x", app);
 
             // Prefer local folder, then AppData.
-            iw6x_location = appDataIw6x;
+            iw6x_location = localIw6x;
 
             if (File.Exists(appDataIw6x))
             {
