@@ -22,8 +22,9 @@ namespace iw6x_server_launcher
 {
     public partial class Main : Form
     {
-        private string app = "iw6x.exe";
-        private string xlabs_app = "xlabs.exe";
+        private string app = "iw6-mod.exe";
+        private string xlabs_app = "alterware-launcher.exe";
+        private bool local_game_folder = true;
         private string xlabs_app_full = "";
         private string server_config = "server.cfg";
         private string LocalAppData = Environment.GetEnvironmentVariable("LocalAppData");
@@ -48,20 +49,42 @@ namespace iw6x_server_launcher
 
         private void Main_Load(object sender, EventArgs e)
         {
-            // We need to set the "XLABS_GHOSTS_INSTALL" environment variable to the game location
-            iw6x_location = Path.Combine(LocalAppData, "xlabs", "data", "iw6x", app);
+            // Determine current game folder first
             game_location = Directory.GetCurrentDirectory();
+
+            // Build candidate paths
+            string localIw6x   = Path.Combine(game_location, app);
+            string appDataIw6x = Path.Combine(LocalAppData, "xlabs", "data", "iw6x", app);
+
+            // Prefer local folder, then AppData.
+            iw6x_location = appDataIw6x;
+
+            if (File.Exists(appDataIw6x))
+            {
+                iw6x_location = appDataIw6x;
+            }
+
+            // Check config for xlabs executable name, default to alterware-launcher.exe
+            string configXlabsApp = IniFile.ReadValue(config_file, "server", "updater_exec");
+            if (!string.IsNullOrEmpty(configXlabsApp))
+            {
+                xlabs_app = configXlabsApp;
+            }
+
+
+            // We need to set the "XLABS_GHOSTS_INSTALL" environment variable to the game location
             Environment.SetEnvironmentVariable("XLABS_GHOSTS_INSTALL", game_location);
 
             xlabs_app_full = Path.Combine(game_location, xlabs_app);
             config_file = Path.Combine(game_location, config_file);
 
             // Update text fields
-            textPort.Text       = port = IniFile.ReadValue(config_file, "server", "port");
-            checkUpdate.Checked = IniFile.ReadValue(config_file, "server", "update") == "1" ? true : false;
-            checkOnline.Checked = IniFile.ReadValue(config_file, "server", "online") == "1" ? true : false;
-            sv_lanonly          = IniFile.ReadValue(config_file, "server", "online") == "1" ? "1" : "0";
-            checkBoxMapRandom.Checked = IniFile.ReadValue(config_file, "server", "randomize_maps") == "1" ? true :false;
+            textPort.Text = port = IniFile.ReadValue(config_file, "server", "port");
+            checkUpdate.Checked  = IniFile.ReadValue(config_file, "server", "update") == "1" ? true : false;
+            checkOnline.Checked  = IniFile.ReadValue(config_file, "server", "online") == "1" ? true : false;
+            sv_lanonly           = IniFile.ReadValue(config_file, "server", "online") == "1" ? "1" : "0";
+
+            checkBoxMapRandom.Checked = IniFile.ReadValue(config_file, "server", "randomize_maps") == "1" ? true : false;
             textBoxDirectConnect.Text = IniFile.ReadValue(config_file, "client", "last_ip");
 
             // Update the IP list
@@ -71,13 +94,13 @@ namespace iw6x_server_launcher
             populateConfigList();
 
             // Select config from ini and update the listbox
-            if(listBoxConfigs.Items.Count > 0)
+            if (listBoxConfigs.Items.Count > 0)
             {
                 listBoxConfigs.SelectedIndex = 0;
             }
 
             launch_config = IniFile.ReadValue(config_file, "server", "server_config");
-            if(launch_config != "")
+            if (launch_config != "")
             {
                 listBoxConfigs.SelectedIndex = listBoxConfigs.FindStringExact(launch_config);
             }
@@ -136,11 +159,11 @@ namespace iw6x_server_launcher
          */
         private void populateConfigList()
         {
-            string config_path = Path.Combine(game_location, "iw6x");
+            string config_path = Path.Combine(game_location, "iw6");
             if (!Directory.Exists(config_path)) return;
 
             // Get a list of config files from the iw6x folder within the game
-            string[] config_files = Directory.GetFiles(Path.Combine(game_location, "iw6x"), "*.cfg");
+            string[] config_files = Directory.GetFiles(Path.Combine(game_location, "iw6"), "*.cfg");
 
             // Update the listbox
             listBoxConfigs.Items.Clear();
@@ -208,7 +231,7 @@ namespace iw6x_server_launcher
         private void listBoxConfigs_SelectedIndexChanged(object sender, EventArgs e)
         {
             launch_config = listBoxConfigs.SelectedItem.ToString();
-            string configPath = Path.Combine(game_location, "iw6x", launch_config);
+            string configPath = Path.Combine(game_location, "iw6", launch_config);
 
             labelGameModeValue.Text = "Unknown";
             labelPlayersValue.Text = "Unknown";
@@ -332,7 +355,7 @@ namespace iw6x_server_launcher
         private bool detectAliensMode(string configFile)
         {
             // Get Config file path Directory.GetFiles(Path.Combine(game_location, "iw6x"), "*.cfg");
-            string configPath = Path.Combine(game_location, "iw6x", configFile);
+            string configPath = Path.Combine(game_location, "iw6", configFile);
 
             // Check if file exists, Read the file contents to see if "set scr_aliens" exists
             if (File.Exists(configPath))
@@ -362,7 +385,7 @@ namespace iw6x_server_launcher
             launch_config = listBoxConfigs.SelectedItem.ToString();
 
             // Open config in notepad
-            Process.Start(Path.Combine(game_location, "iw6x", launch_config));
+            Process.Start(Path.Combine(game_location, "iw6", launch_config));
         }
 
         private void buttonLocalConnect_Click(object sender, EventArgs e)
@@ -378,65 +401,106 @@ namespace iw6x_server_launcher
 
         private bool checkMapRotation(string configFile)
         {
-            string configPath = Path.Combine(game_location, "iw6x", configFile);
+            // Accept either a full path or a filename
+            string configPath = configFile;
+            if (!Path.IsPathRooted(configPath))
+            {
+                configPath = Path.Combine(game_location, "iw6", configFile);
+            }
 
             if (!File.Exists(configPath)) return false;
 
             // Read the file contents
             string fileContents = File.ReadAllText(configPath);
 
-            // We need to see if "set sv_maprotation" exists, if so, we need to randomize it
-            if (!fileContents.Contains("set sv_maprotation")) return false;
+            // Find the sv_maprotation line and parse gametype and maps
+            var m = Regex.Match(fileContents, "set\\s+sv_maprotation\\s+\"([^\"]*)\"", RegexOptions.IgnoreCase);
+            if (!m.Success) return false;
 
-            // Get the current map rotation, this is in the file, starts with "set sv_maprotation" and has a value in quotes
-            string mapRotation = Regex.Match(fileContents, "set sv_maprotation \"(.*?)\"").Groups[1].Value;
+            string inner = m.Groups[1].Value; // content inside the quotes
 
-            // Get gametype from map rotation so we can add it all back later
-            string gametype = Regex.Match(mapRotation, "gametype (.*?) ").Groups[1].Value;
+            // Extract gametype
+            var gm = Regex.Match(inner, "gametype\\s+(\\S+)", RegexOptions.IgnoreCase);
+            if (gm.Success)
+            {
+                server_config_gamemode = gm.Groups[1].Value;
+            }
+            else
+            {
+                server_config_gamemode = "unknown";
+            }
 
-            // Remove "gametype " and the following word from the full string
-            mapRotation = Regex.Replace(mapRotation, "gametype \\w+ ", "");
+            // Extract maps
+            var matches = Regex.Matches(inner, "map\\s+(\\S+)", RegexOptions.IgnoreCase);
+            List<string> maps = new List<string>();
+            foreach (Match mm in matches)
+            {
+                if (mm.Groups.Count > 1)
+                {
+                    maps.Add(mm.Groups[1].Value);
+                }
+            }
 
-            // Split the map rotation into an array of maps skipping the "map " part
-            string[] maps = Regex.Split(mapRotation, "map ");
+            server_config_maps = maps.ToArray();
 
-
-            server_config_gamemode = gametype;
-            server_config_maps     = maps;
-
-            return true;
+            return server_config_maps.Length > 0;
         }
 
         private void randomizeMapRotation(string configFile)
         {
-            if (!checkMapRotation(configFile)) return;
-
-            string configPath = Path.Combine(game_location, "iw6x", configFile);
-            string fileContents = File.ReadAllText(configPath);
+            // Accept either a filename or full path
+            string configPath = configFile;
+            if (!Path.IsPathRooted(configPath))
+            {
+                configPath = Path.Combine(game_location, "iw6", configFile);
+            }
 
             if (!File.Exists(configPath)) return;
 
-            string[] maps = server_config_maps;
-            string gametype = server_config_gamemode;
+            // Populate server_config_maps and server_config_gamemode
+            if (!checkMapRotation(configPath)) return;
 
-            // Randomize the map rotation
-            Random rnd = new Random();
-            maps = maps.OrderBy(x => rnd.Next()).ToArray();
+            if (server_config_maps == null || server_config_maps.Length == 0) return;
 
-            // Rebuild the map rotation string
-            string mapRotation = "map " + string.Join("map ", maps);
+            // Shuffle maps using Fisher-Yates
+            var rng = new Random();
+            string[] maps = (string[])server_config_maps.Clone();
+            for (int i = maps.Length - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                var tmp = maps[i];
+                maps[i] = maps[j];
+                maps[j] = tmp;
+            }
 
-            // Add gametype back to the map rotation
-            mapRotation = "gametype " + gametype + " " + mapRotation;
+            // Rebuild the inner content: keep gametype if present, then "map <name>" entries
+            StringBuilder sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(server_config_gamemode) && server_config_gamemode != "unknown")
+            {
+                sb.Append("gametype ");
+                sb.Append(server_config_gamemode);
+                sb.Append(' ');
+            }
 
-            // Remove last space
-            mapRotation = mapRotation.TrimEnd();
+            for (int i = 0; i < maps.Length; i++)
+            {
+                sb.Append("map ");
+                sb.Append(maps[i]);
+                if (i < maps.Length - 1) sb.Append(' ');
+            }
 
-            // Replace the old map rotation with the new one
-            fileContents = Regex.Replace(fileContents, "set sv_maprotation \"(.*?)\"", "set sv_maprotation \"" + mapRotation + "\"");
+            string newInner = sb.ToString();
+
+            // Replace only the content inside the quotes for the sv_maprotation line
+            string fileContents = File.ReadAllText(configPath);
+            string pattern = "(?i)(set\\s+sv_maprotation\\s+)\"[^\"]*\"";
+            string replacement = "$1\"" + Regex.Escape(newInner).Replace("\\ ", " ") + "\""; // ensure proper escaping
+
+            // Use Regex with IgnoreCase
+            string newFileContents = Regex.Replace(fileContents, pattern, replacement, RegexOptions.IgnoreCase);
 
             // Write the new file contents
-            File.WriteAllText(configPath, fileContents);
+            File.WriteAllText(configPath, newFileContents);
         }
 
         private string gameModeLookup(string gameMode)
@@ -464,7 +528,7 @@ namespace iw6x_server_launcher
 
         private string readConfigValue(string configFile, string key)
         {
-            string configPath = Path.Combine(game_location, "iw6x", configFile);
+            string configPath = Path.Combine(game_location, "iw6", configFile);
 
             string value = null;
             string[] lines = File.ReadAllLines(configPath);

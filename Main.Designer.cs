@@ -50,13 +50,13 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabClient = new System.Windows.Forms.TabPage();
             this.tabHost = new System.Windows.Forms.TabPage();
+            this.labelPlayersValue = new System.Windows.Forms.Label();
+            this.labelPlayers = new System.Windows.Forms.Label();
             this.labelGameModeValue = new System.Windows.Forms.Label();
             this.labelGameMode = new System.Windows.Forms.Label();
             this.checkBoxMapRandom = new System.Windows.Forms.CheckBox();
             this.tabInfo = new System.Windows.Forms.TabPage();
             this.labelVersion = new System.Windows.Forms.Label();
-            this.labelPlayers = new System.Windows.Forms.Label();
-            this.labelPlayersValue = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabClient.SuspendLayout();
             this.tabHost.SuspendLayout();
@@ -305,6 +305,28 @@
             this.tabHost.TabIndex = 1;
             this.tabHost.Text = "Host";
             // 
+            // labelPlayersValue
+            // 
+            this.labelPlayersValue.AutoSize = true;
+            this.labelPlayersValue.BackColor = System.Drawing.Color.Transparent;
+            this.labelPlayersValue.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelPlayersValue.Location = new System.Drawing.Point(94, 126);
+            this.labelPlayersValue.Name = "labelPlayersValue";
+            this.labelPlayersValue.Size = new System.Drawing.Size(53, 13);
+            this.labelPlayersValue.TabIndex = 21;
+            this.labelPlayersValue.Text = "Unknown";
+            // 
+            // labelPlayers
+            // 
+            this.labelPlayers.AutoSize = true;
+            this.labelPlayers.BackColor = System.Drawing.Color.Transparent;
+            this.labelPlayers.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.labelPlayers.Location = new System.Drawing.Point(46, 126);
+            this.labelPlayers.Name = "labelPlayers";
+            this.labelPlayers.Size = new System.Drawing.Size(47, 13);
+            this.labelPlayers.TabIndex = 20;
+            this.labelPlayers.Text = "Players: ";
+            // 
             // labelGameModeValue
             // 
             this.labelGameModeValue.AutoSize = true;
@@ -364,28 +386,6 @@
             this.labelVersion.Size = new System.Drawing.Size(63, 13);
             this.labelVersion.TabIndex = 14;
             this.labelVersion.Text = "Version: 0.1";
-            // 
-            // labelPlayers
-            // 
-            this.labelPlayers.AutoSize = true;
-            this.labelPlayers.BackColor = System.Drawing.Color.Transparent;
-            this.labelPlayers.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.labelPlayers.Location = new System.Drawing.Point(46, 126);
-            this.labelPlayers.Name = "labelPlayers";
-            this.labelPlayers.Size = new System.Drawing.Size(47, 13);
-            this.labelPlayers.TabIndex = 20;
-            this.labelPlayers.Text = "Players: ";
-            // 
-            // labelPlayersValue
-            // 
-            this.labelPlayersValue.AutoSize = true;
-            this.labelPlayersValue.BackColor = System.Drawing.Color.Transparent;
-            this.labelPlayersValue.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.labelPlayersValue.Location = new System.Drawing.Point(94, 126);
-            this.labelPlayersValue.Name = "labelPlayersValue";
-            this.labelPlayersValue.Size = new System.Drawing.Size(53, 13);
-            this.labelPlayersValue.TabIndex = 21;
-            this.labelPlayersValue.Text = "Unknown";
             // 
             // Main
             // 
