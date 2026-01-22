@@ -399,7 +399,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(63, 13);
             this.labelVersion.TabIndex = 14;
-            this.labelVersion.Text = "Version: 0.1";
+            this.labelVersion.Text = "Version: 0.5";
             // 
             // Main
             // 
