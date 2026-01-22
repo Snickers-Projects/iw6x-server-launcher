@@ -55,6 +55,7 @@
             this.labelGameModeValue = new System.Windows.Forms.Label();
             this.labelGameMode = new System.Windows.Forms.Label();
             this.checkBoxMapRandom = new System.Windows.Forms.CheckBox();
+            this.buttonConfigCreator = new System.Windows.Forms.Button();
             this.tabInfo = new System.Windows.Forms.TabPage();
             this.labelVersion = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
@@ -156,9 +157,9 @@
             // 
             this.buttonOpenConfig.BackColor = System.Drawing.Color.White;
             this.buttonOpenConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonOpenConfig.Location = new System.Drawing.Point(255, 98);
+            this.buttonOpenConfig.Location = new System.Drawing.Point(232, 98);
             this.buttonOpenConfig.Name = "buttonOpenConfig";
-            this.buttonOpenConfig.Size = new System.Drawing.Size(79, 24);
+            this.buttonOpenConfig.Size = new System.Drawing.Size(102, 24);
             this.buttonOpenConfig.TabIndex = 14;
             this.buttonOpenConfig.Text = "Open Config";
             this.buttonOpenConfig.UseVisualStyleBackColor = false;
@@ -298,6 +299,7 @@
             this.tabHost.Controls.Add(this.checkOnline);
             this.tabHost.Controls.Add(this.labelConfigList);
             this.tabHost.Controls.Add(this.listBoxConfigs);
+            this.tabHost.Controls.Add(this.buttonConfigCreator);
             this.tabHost.Location = new System.Drawing.Point(4, 22);
             this.tabHost.Name = "tabHost";
             this.tabHost.Padding = new System.Windows.Forms.Padding(3);
@@ -361,6 +363,18 @@
             this.checkBoxMapRandom.Text = "Try Randomize Map Rotation";
             this.checkBoxMapRandom.UseVisualStyleBackColor = false;
             this.checkBoxMapRandom.CheckedChanged += new System.EventHandler(this.checkBoxMapRandom_CheckedChanged);
+            // 
+            // buttonConfigCreator
+            // 
+            this.buttonConfigCreator.BackColor = System.Drawing.Color.White;
+            this.buttonConfigCreator.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonConfigCreator.Location = new System.Drawing.Point(232, 128);
+            this.buttonConfigCreator.Name = "buttonConfigCreator";
+            this.buttonConfigCreator.Size = new System.Drawing.Size(102, 23);
+            this.buttonConfigCreator.TabIndex = 22;
+            this.buttonConfigCreator.Text = "Config Creator";
+            this.buttonConfigCreator.UseVisualStyleBackColor = false;
+            this.buttonConfigCreator.Click += new System.EventHandler(this.buttonConfigCreator_Click);
             // 
             // tabInfo
             // 
@@ -443,6 +457,7 @@
         private System.Windows.Forms.Label labelGameMode;
         private System.Windows.Forms.Label labelPlayersValue;
         private System.Windows.Forms.Label labelPlayers;
+        private System.Windows.Forms.Button buttonConfigCreator;
     }
 }
 

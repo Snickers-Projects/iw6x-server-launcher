@@ -563,5 +563,12 @@ namespace iw6x_server_launcher
 
             return null;
         }
+
+        private void buttonConfigCreator_Click(object sender, EventArgs e)
+        {
+            ServerConfigCreator configCreator = new ServerConfigCreator();
+            configCreator.ShowDialog(this);
+            populateConfigList();
+        }
     }
 }
